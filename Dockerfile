@@ -1,6 +1,7 @@
-FROM nvcr.io/nvidia/tritonserver:24.04-py3-min as base
-ARG PYTHON_VERSION=3.9
-ARG MAMBA_VERSION=23.1.0-1
+ARG CUDA_VERSION=12.6.1
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu22.04
+ARG PYTHON_VERSION=3.10
+ARG MAMBA_VERSION=24.7.1-0
 ARG TARGETPLATFORM
 
 ENV PATH=/opt/conda/bin:$PATH \
@@ -33,7 +34,7 @@ RUN case ${TARGETPLATFORM} in \
 
 WORKDIR /root
 
-RUN pip install --no-cache-dir --ignore-installed --extra-index-url https://download.pytorch.org/whl/cu124 torch==2.5.1
+RUN pip install torch==2.7.1
 
 RUN git clone https://github.com/Dao-AILab/flash-attention.git -b v2.7.4.post1
 RUN cd flash-attention/hopper && MAX_JOBS=1 NVCC_THREADS=1 FLASH_ATTN_CUDA_ARCHS=90 python setup.py bdist_wheel
